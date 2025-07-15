@@ -1,0 +1,70 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Go modules vendor dir
+/vendor/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# Env config
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependency directories (remove the comment if you use these tools)
+node_modules/
+tmp/
+
+# Go build cache
+/cache/
+
+# Compiled object files
+*.o
+*.a
+
+# Compiled binary files
+bin/
+_build/
+debug/
+
+# GORM sqlite database files (if any)
+*.db
+*.sqlite
+
+# YAML config if you want it private (optional)
+# config.yaml
+
+# Coverage reports
+coverage.*
+*.coverprofile
+
+# Go playground uploads
+golang.org/
+
+# Panic logs
+panic.log
+
+config.yaml
