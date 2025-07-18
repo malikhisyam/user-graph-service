@@ -15,5 +15,7 @@ func RegisterServer(router *gin.Engine) {
 		relation.GET("/:userId/followings/:targetUserId", RelationHttp.IsFollowing)
 		// Get Specific User His/Her Followers
 		relation.GET("/:userId/followers", RelationHttp.GetFollowers)
+		// Get Specific User His/Her Followings
+		relation.GET("/:userId/followings", RelationHttp.GetFollowings)
 	}
 }

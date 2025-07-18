@@ -20,3 +20,8 @@ type IsFollowingRequest struct {
 type GetFollowersRequest struct {
 	UserID uuid.UUID `json:"user_id" binding:"required"`
 }
+
+type GetFollowingsRequest struct {
+	UserID uuid.UUID `json:"user_id" binding:"required"`
+}
+

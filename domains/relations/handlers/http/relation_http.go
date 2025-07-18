@@ -100,3 +100,33 @@ func (h *RelationHttp) GetFollowers(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+func (h *RelationHttp) GetFollowings(c *gin.Context) {
+	var req requests.GetFollowingsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	followings, err := h.relationUc.GetFollowings(c.Request.Context(), req.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var followingResponses []responses.FolllowingResponse
+	for _, f := range followings {
+		followingResponses = append(followingResponses, responses.FolllowingResponse{
+			ID:          f.ID,
+			FollowerID:  f.FollowerID,
+			FollowingID: f.FollowingID,
+			CreatedAt:   f.CreatedAt,
+		})
+	}
+
+	resp := responses.GetFollowingsResponse{
+		Followings: followingResponses,
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
