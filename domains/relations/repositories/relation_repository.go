@@ -19,7 +19,7 @@ type RelationRepository interface {
 	Follow(ctx context.Context, followerID, followingID uuid.UUID) error
 	Unfollow(ctx context.Context, followerID, followingID uuid.UUID) error
 	IsFollowing(ctx context.Context, followerID, followingID uuid.UUID) (bool, error)
-	GetFollowers(ctx context.Context, userID uuid.UUID) ([]entities.Follows, error)
+	GetFollowers(ctx context.Context, userID string) ([]entities.Follows, error)
 	GetFollowings(ctx context.Context, userID string) ([]entities.Follows, error)
 }
 
@@ -202,7 +202,7 @@ func (r *relationRepository) IsFollowing(ctx context.Context, followerID, follow
 	return true, nil
 }
 
-func (r *relationRepository) GetFollowers(ctx context.Context, userID uuid.UUID) ([]entities.Follows, error) {
+func (r *relationRepository) GetFollowers(ctx context.Context, userID string) ([]entities.Follows, error) {
 	var followers []entities.Follows
 
 	err := r.db.GetInstance().

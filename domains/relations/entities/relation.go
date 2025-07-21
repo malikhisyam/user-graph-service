@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/malikhisyam/user-graph-service/domains/users/entities"
-	"gorm.io/gorm"
 )
 
 type Follows struct {
@@ -19,7 +18,6 @@ type Follows struct {
 
 	CreatedAt time.Time      `gorm:"type:timestamp;column:created_at"`
 	UpdatedAt time.Time      `gorm:"type:timestamp;column:updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index;column:deleted_at"`
 }
 
 

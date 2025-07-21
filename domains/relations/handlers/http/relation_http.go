@@ -71,13 +71,9 @@ func (h *RelationHttp) IsFollowing(c *gin.Context) {
 }
 
 func (h *RelationHttp) GetFollowers(c *gin.Context) {
-	var req requests.GetFollowersRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"gg": err.Error()})
-		return
-	}
+	userId := c.Param("userId")
 
-	follows, err := h.relationUc.GetFollowers(c.Request.Context(), req.UserID)
+	follows, err := h.relationUc.GetFollowers(c.Request.Context(), userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

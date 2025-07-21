@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type User struct {
@@ -20,5 +19,4 @@ type User struct {
 	Profile   string         `gorm:"type:varchar(255)"`
 	CreatedAt time.Time      `gorm:"type:timestamp"`
 	UpdatedAt time.Time      `gorm:"type:timestamp"`
-	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
