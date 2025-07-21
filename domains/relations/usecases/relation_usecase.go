@@ -19,7 +19,7 @@ type RelationUseCase interface {
 	Unfollow(ctx context.Context, followerID, followingID uuid.UUID) error
 	IsFollowing(ctx context.Context, followerID, followingID uuid.UUID) (bool, error)
 	GetFollowers(ctx context.Context, userID uuid.UUID) ([]entities.Follows, error)
-	GetFollowings(ctx context.Context, userID uuid.UUID) ([]entities.Follows, error)
+	GetFollowings(ctx context.Context, userID string) ([]entities.Follows, error)
 }
 
 type relationUsecase struct {
@@ -56,7 +56,7 @@ func (u *relationUsecase) GetFollowers(ctx context.Context, userID uuid.UUID) ([
 	return u.relationRepo.GetFollowers(ctx, userID)
 }
 
-func (u *relationUsecase) GetFollowings(ctx context.Context, userID uuid.UUID) ([]entities.Follows, error) {
+func (u *relationUsecase) GetFollowings(ctx context.Context, userID string) ([]entities.Follows, error) {
 	return u.relationRepo.GetFollowings(ctx, userID)
 }
 
