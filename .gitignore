@@ -26,10 +26,6 @@ go.work.sum
 # Logs
 *.log
 
-# Env config
-.env
-.env.*
-
 # OS files
 .DS_Store
 Thumbs.db
@@ -67,4 +63,3 @@ golang.org/
 # Panic logs
 panic.log
 
-config.yaml
