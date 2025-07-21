@@ -2,7 +2,7 @@ package wizards
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/malikhisyam/user-graph-service/shared/middlewares"
+	// "github.com/malikhisyam/user-graph-service/shared/middlewares"
 )
 
 func RegisterServer(router *gin.Engine) {
@@ -10,7 +10,7 @@ func RegisterServer(router *gin.Engine) {
 	v1 := api.Group("/v1")
 	relation := v1.Group("/relations")
 	{
-		relation.Use(middlewares.AuthMiddleware())
+		// relation.Use(middlewares.AuthMiddleware())
 		// Follow User 
 		relation.POST("/followings", RelationHttp.Follow)
 		// Unfollow User
