@@ -5,7 +5,9 @@ import (
 )
 
 func RegisterServer(router *gin.Engine) {
-	relation := router.Group("/relations")
+	api := router.Group("/api")
+	v1 := api.Group("/v1")
+	relation := v1.Group("/relations")
 	{
 		// Follow User 
 		relation.POST("/followings", RelationHttp.Follow)

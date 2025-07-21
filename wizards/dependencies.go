@@ -2,6 +2,7 @@ package wizards
 
 import (
 	"github.com/malikhisyam/user-graph-service/config"
+	"github.com/malikhisyam/user-graph-service/shared/util"
 
 	relationHttp "github.com/malikhisyam/user-graph-service/domains/relations/handlers/http"
 	relationRepo "github.com/malikhisyam/user-graph-service/domains/relations/repositories"
@@ -12,7 +13,9 @@ import (
 var (
 	Config             = config.GetConfig()
 	PostgresDatabase   = infrastructures.NewPostgresDatabase(Config)
-	RelationRepository = relationRepo.NewRelationRepository(PostgresDatabase)
+	RedisClient        = infrastructures.InitRedis()
+	LoggerInstance, _ = util.NewLogger();
+	RelationRepository = relationRepo.NewRelationRepository(PostgresDatabase, RedisClient, LoggerInstance)
 	RelationUseCase = relationUc.NewRelationUseCase(RelationRepository)
 	RelationHttp = relationHttp.NewRelationHttp(RelationUseCase)
 )
