@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"github.com/malikhisyam/user-graph-service/domains/relations/entities"
+	"github.com/malikhisyam/user-graph-service/domains/relations/models/responses"
 	"github.com/malikhisyam/user-graph-service/domains/relations/repositories"
 )
 
@@ -18,8 +18,8 @@ type RelationUseCase interface {
 	Follow(ctx context.Context, followerID, followingID uuid.UUID) error
 	Unfollow(ctx context.Context, followerID, followingID uuid.UUID) error
 	IsFollowing(ctx context.Context, followerID, followingID uuid.UUID) (bool, error)
-	GetFollowers(ctx context.Context, userID string) ([]entities.Follows, error)
-	GetFollowings(ctx context.Context, userID string) ([]entities.Follows, error)
+	GetFollowers(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowerWithUserInfo, error) 
+	GetFollowings(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowingWithUserInfo, error)
 }
 
 type relationUsecase struct {
@@ -52,12 +52,15 @@ func (u *relationUsecase) IsFollowing(ctx context.Context, followerID, following
 	return u.relationRepo.IsFollowing(ctx, followerID, followingID)
 }
 
-func (u *relationUsecase) GetFollowers(ctx context.Context, userID string) ([]entities.Follows, error) {
-	return u.relationRepo.GetFollowers(ctx, userID)
+func (u *relationUsecase) GetFollowers(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowerWithUserInfo, error) {
+	return u.relationRepo.GetFollowers(ctx, userID, limit, offset, nameFilter)
 }
 
-func (u *relationUsecase) GetFollowings(ctx context.Context, userID string) ([]entities.Follows, error) {
-	return u.relationRepo.GetFollowings(ctx, userID)
+
+
+func (u *relationUsecase) GetFollowings(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowingWithUserInfo, error) {
+	return u.relationRepo.GetFollowings(ctx, userID, limit, offset, nameFilter)
 }
+
 
 

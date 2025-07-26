@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/malikhisyam/user-graph-service/domains/relations/entities"
+	"github.com/malikhisyam/user-graph-service/domains/relations/models/responses"
 	"github.com/malikhisyam/user-graph-service/infrastructures"
 	"github.com/malikhisyam/user-graph-service/shared/util"
 	"github.com/redis/go-redis/v9"
@@ -19,8 +21,8 @@ type RelationRepository interface {
 	Follow(ctx context.Context, followerID, followingID uuid.UUID) error
 	Unfollow(ctx context.Context, followerID, followingID uuid.UUID) error
 	IsFollowing(ctx context.Context, followerID, followingID uuid.UUID) (bool, error)
-	GetFollowers(ctx context.Context, userID string) ([]entities.Follows, error)
-	GetFollowings(ctx context.Context, userID string) ([]entities.Follows, error)
+	GetFollowers(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowerWithUserInfo, error)
+	GetFollowings(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowingWithUserInfo, error)
 }
 
 type relationRepository struct {
@@ -202,32 +204,57 @@ func (r *relationRepository) IsFollowing(ctx context.Context, followerID, follow
 	return true, nil
 }
 
-func (r *relationRepository) GetFollowers(ctx context.Context, userID string) ([]entities.Follows, error) {
-	var followers []entities.Follows
+func (r *relationRepository) GetFollowers(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowerWithUserInfo, error) {
+	var followers []responses.FollowerWithUserInfo
 
-	err := r.db.GetInstance().
-		WithContext(ctx).
-		Where("following_id = ?", userID).
-		Find(&followers).Error
+	db := r.db.GetInstance().WithContext(ctx).
+		Table("follows").
+		Select("follows.id, follows.follower_id, users.name, users.username").
+		Joins("JOIN users ON follows.follower_id = users.id").
+		Where("follows.following_id = ?", userID).
+		Order("follows.created_at DESC").
+		Limit(limit).
+		Offset(offset)
+
+	if nameFilter != "" {
+		db = db.Where("LOWER(users.name) LIKE ?", "%"+strings.ToLower(nameFilter)+"%")
+	}
+
+	err := db.Find(&followers).Error
+	return followers, err
+}
+
+func (r *relationRepository) GetFollowings(ctx context.Context, userID string, limit, offset int, nameFilter string) ([]responses.FollowingWithUserInfo, error) {
+	var results []responses.FollowingWithUserInfo
+
+	db := r.db.GetInstance().WithContext(ctx)
+
+	query := db.
+		Table("follows AS f").
+		Select(`
+			f.id,
+			f.follower_id,
+			f.following_id,
+			u.name,
+			u.username
+		`).
+		Joins("JOIN users u ON f.following_id = u.id").
+		Where("f.follower_id = ?", userID)
+
+	if nameFilter != "" {
+		query = query.Where("(u.name ILIKE ? OR u.username ILIKE ?)", "%"+nameFilter+"%", "%"+nameFilter+"%")
+	}
+
+	err := query.
+		Order("f.created_at DESC").
+		Limit(limit).
+		Offset(offset).
+		Scan(&results).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	return followers, nil
+	return results, nil
 }
 
-func (r *relationRepository) GetFollowings(ctx context.Context, userID string) ([]entities.Follows, error) {
-	var followings []entities.Follows
-
-	err := r.db.GetInstance().
-		WithContext(ctx).
-		Where("follower_id = ?", userID).
-		Find(&followings).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	return followings, nil
-}

@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/malikhisyam/user-graph-service/domains/relations/models/requests"
@@ -73,19 +74,39 @@ func (h *RelationHttp) IsFollowing(c *gin.Context) {
 func (h *RelationHttp) GetFollowers(c *gin.Context) {
 	userId := c.Param("userId")
 
-	follows, err := h.relationUc.GetFollowers(c.Request.Context(), userId)
+	// Pagination
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page parameter"})
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit parameter"})
+		return
+	}
+
+	offset := (page - 1) * limit
+
+	nameFilter := c.DefaultQuery("name", "")
+
+	followers, err := h.relationUc.GetFollowers(c.Request.Context(), userId, limit, offset, nameFilter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	var followerResponses []responses.FollowerResponse
-	for _, f := range follows {
+	for _, f := range followers {
 		followerResponses = append(followerResponses, responses.FollowerResponse{
 			ID:          f.ID,
 			FollowerID:  f.FollowerID,
-			FollowingID: f.FollowingID,
-			CreatedAt:   f.CreatedAt,
+			DisplayName: f.Name,
+			Username:    f.Username,
 		})
 	}
 
@@ -96,22 +117,48 @@ func (h *RelationHttp) GetFollowers(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+
+
 func (h *RelationHttp) GetFollowings(c *gin.Context) {
 	userId := c.Param("userId")
 
-	followings, err := h.relationUc.GetFollowings(c.Request.Context(), userId)
+	// Pagination
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page parameter"})
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit parameter"})
+		return
+	}
+
+	offset := (page - 1) * limit
+
+	// Name filter
+	nameFilter := c.DefaultQuery("name", "")
+
+	// Usecase
+	followings, err := h.relationUc.GetFollowings(c.Request.Context(), userId, limit, offset, nameFilter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	var followingResponses []responses.FolllowingResponse
+	var followingResponses []responses.FollowingResponse
 	for _, f := range followings {
-		followingResponses = append(followingResponses, responses.FolllowingResponse{
-			ID:          f.ID,
-			FollowerID:  f.FollowerID,
-			FollowingID: f.FollowingID,
-			CreatedAt:   f.CreatedAt,
+		followingResponses = append(followingResponses, responses.FollowingResponse{
+			ID:           f.ID,
+			FollowerID:   f.FollowerID,
+			FollowingID:  f.FollowingID,
+			Name:  f.Name,
+			Username:     f.Username,
+			CreatedAt:    f.CreatedAt,
 		})
 	}
 
@@ -121,4 +168,5 @@ func (h *RelationHttp) GetFollowings(c *gin.Context) {
 
 	c.JSON(http.StatusOK, resp)
 }
+
 

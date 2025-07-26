@@ -2,8 +2,6 @@ package responses
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type IsFollowingResponse struct {
@@ -11,22 +9,25 @@ type IsFollowingResponse struct {
 }
 
 type FollowerResponse struct {
-	ID          uuid.UUID `json:"id"`
-	FollowerID  uuid.UUID `json:"follower_id"`
-	FollowingID uuid.UUID `json:"following_id"`
-	CreatedAt   time.Time `json:"created_at"`
+    ID          string    `json:"id"`
+    FollowerID  string    `json:"follower_id"`
+    DisplayName string    `json:"display_name"`
+    Username    string    `json:"username"`
+    CreatedAt   time.Time `json:"created_at"`
 }
 
-type FolllowingResponse struct {
-	ID          uuid.UUID `json:"id"`
-	FollowerID  uuid.UUID `json:"follower_id"`
-	FollowingID uuid.UUID `json:"following_id"`
-	CreatedAt   time.Time `json:"created_at"`
+type FollowingResponse struct {
+	ID           string    `json:"id"`
+	FollowerID   string    `json:"follower_id"`
+	FollowingID  string    `json:"following_id"`
+	Name string    `json:"name"`
+	Username     string    `json:"username"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 type GetFollowersResponse struct {
-	Followers []FollowerResponse `json:"followers"`
+    Followers []FollowerResponse `json:"followers"`
 }
 
 type GetFollowingsResponse struct {
-	Followings []FolllowingResponse`json:"followings"`
+	Followings []FollowingResponse `json:"followings"`
 }
